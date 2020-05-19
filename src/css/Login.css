@@ -1,0 +1,24 @@
+.form {
+    width: 30%;
+    margin: auto;
+    margin-top: 200px;
+    height: 200px;
+}
+
+a {
+    margin-right: auto;
+}
+
+.txt-title {
+    margin-bottom: 50px;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.link-forgot {
+    float: right;
+}
+
+.lable {
+    font-weight: 200;
+}

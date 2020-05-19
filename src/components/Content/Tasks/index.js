@@ -1,103 +1,75 @@
 import React, { Component } from 'react'
-import { Table, Button, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
-import './../../../css/Table.css'
+import { Table, Button } from 'reactstrap';
+import TableRow from './TableRow';
+import axios from 'axios';
+import '../../../css/member.css'
 
 export default class Tasks extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            tasks: [],
+            tasksUser: []
+        };
+    }
+
+    componentDidMount() {
+        const token = localStorage.getItem("jwt_token");
+        const AuthStr = 'Bearer ' + token;
+        axios.get('http://localhost:4000/tasks', { headers: { 'Authorization': AuthStr } })
+            .then(response => {
+                this.setState({ tasks: response.data });
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        if (!this.props.admin) {
+            axios.get('http://localhost:4000/users/' + this.props.user.id, { headers: { 'Authorization': AuthStr } })
+                .then(response => {
+                    console.log(response.data)
+                    this.setState({ tasksUser: response.data[0].tasks });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+        }
+
+    }
+
+    tabRow() {
+        const admin = this.props.admin;
+        if (admin) {
+            return this.state.tasks.map(function (object, i) {
+                return <TableRow obj={object} key={i} admin={admin} />;
+            });
+        }
+        else {
+            return this.state.tasksUser.map(function (task, i) {
+                return <TableRow obj={task} key={i} />;
+            });
+        }
+
+    }
+
     render() {
         return (
-            <div className="table">
-                <Button color="secondary" className="text-white" href="/">BACK</Button>
+            <div className="table body">
                 <h3 className="pb-20">Management Tasks</h3>
                 <Button color="primary" className="text-white" href="/create-task">CREATE</Button>
                 <Table responsive striped>
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>ID</th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>Status</th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>CRUD User</td>
-                            <td>CRUD User</td>
-                            <td>Completed</td>
-                            <td><Button color="secondary">READ</Button>{' '}</td>
-                            <td><Button href="/edit-task" color="success">EDIT</Button>{' '}</td>
-                            <td><Button color="danger">DELETE</Button>{' '}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>CRUD User</td>
-                            <td>CRUD User</td>
-                            <td>Completed</td>
-                            <td><Button color="secondary">READ</Button>{' '}</td>
-                            <td><Button href="/edit-task" color="success">EDIT</Button>{' '}</td>
-                            <td><Button color="danger">DELETE</Button>{' '}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td>CRUD User</td>
-                            <td>CRUD User</td>
-                            <td>Completed</td>
-                            <td><Button color="secondary">READ</Button>{' '}</td>
-                            <td><Button href="/edit-task" color="success">EDIT</Button>{' '}</td>
-                            <td><Button color="danger">DELETE</Button>{' '}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">4</th>
-                            <td>CRUD User</td>
-                            <td>CRUD User</td>
-                            <td>Completed</td>
-                            <td><Button color="secondary">READ</Button>{' '}</td>
-                            <td><Button href="/edit-task" color="success">EDIT</Button>{' '}</td>
-                            <td><Button color="danger">DELETE</Button>{' '}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">5</th>
-                            <td>CRUD User</td>
-                            <td>CRUD User</td>
-                            <td>Completed</td>
-                            <td><Button color="secondary">READ</Button>{' '}</td>
-                            <td><Button href="/edit-task" color="success">EDIT</Button>{' '}</td>
-                            <td><Button color="danger">DELETE</Button>{' '}</td>
-                        </tr>
+                        {this.tabRow()}
                     </tbody>
                 </Table>
-                <Pagination aria-label="Page navigation example">
-                    <PaginationItem>
-                        <PaginationLink first href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink previous href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">4</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">5</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink next href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink last href="#" />
-                    </PaginationItem>
-                </Pagination>
             </div>
         )
     }

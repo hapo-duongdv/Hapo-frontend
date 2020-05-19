@@ -1,6 +1,21 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { Form, Input } from 'reactstrap'
+import { withRouter } from 'react-router-dom';
 
-export default class Header extends Component {
+class Header extends Component {
+    state = { search: "" }
+
+    searchOnChange = (event) => {
+        this.setState({
+            search: event.target.value
+        })
+    }
+
+    onSearch = (event) => {
+        event.preventDefault();
+        this.props.history.push(`/search?q=${this.state.search}`)
+        console.log(this.props.history)
+    }
     render() {
         return (
             <div>
@@ -21,7 +36,9 @@ export default class Header extends Component {
                     {/* SEARCH FORM */}
                     <form className="form-inline ml-3">
                         <div className="input-group input-group-sm">
-                            <input className="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" />
+                            <Form onSubmit={this.onSearch}>
+                                <Input className="form-control mr-sm-2" value={this.state.search} onChange={this.searchOnChange} placeholder="Search..." />
+                            </Form>
                             <div className="input-group-append">
                                 <button className="btn btn-navbar" type="submit">
                                     <i className="fas fa-search" />
@@ -127,3 +144,5 @@ export default class Header extends Component {
         )
     }
 }
+
+export default withRouter(Header);
